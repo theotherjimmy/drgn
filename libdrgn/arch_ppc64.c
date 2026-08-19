@@ -416,14 +416,15 @@ linux_kernel_pgtable_iterator_next_ppc64(struct drgn_program *prog,
 	struct pgtable_iterator_ppc64 *it_arch = it->arch;
 	uint64_t virt_addr = it->virt_addr;
 
+	uint64_t table = it->pgtable;
+	bool table_physical = false;
+	if (table == prog->vmcoreinfo.swapper_pg_dir) {
+		table -= prog->vmcoreinfo._stext;
+		table_physical = true;
+	}
 	uint64_t entry;
 	for (uint16_t level = levels;; level--) {
-		uint64_t table;
-		bool table_physical;
-		if (level == levels) {
-			table = it->pgtable;
-			table_physical = false;
-		} else {
+		if (level != levels) {
 			// PAGE_PTE bit represents huge page.
 			if (!(entry & PAGE_PRESENT) || (entry & PAGE_PTE) || level == 0) {
 				uint64_t mask = (UINT64_C(1) << it_arch->pt_levels[level].shift) - 1;

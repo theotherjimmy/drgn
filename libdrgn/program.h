@@ -197,6 +197,11 @@ struct drgn_program {
 				 */
 				uint64_t kaslr_offset;
 				/**
+                                 * the start of kernel text. Also used as the
+                                 * offset of physical memory for ppc64.
+                                 */
+				uint64_t _stext;
+				/**
 				 * The offset from physical memory address 0 of
 				 * the kernel image on s390x.
 				 */
